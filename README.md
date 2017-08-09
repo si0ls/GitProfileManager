@@ -10,15 +10,21 @@ Thanks to [lodi-g](https://github.com/lodi-g) :heart: - Main Contributor
 
 To install:
 
-`bash < <(curl -s -S -L https://github.com/si0ls/GitProfileManager/raw/master/installer)`
+```Bash
+bash < <(curl -s -S -L https://github.com/si0ls/GitProfileManager/raw/master/installer)
+```
 
 Or if you are using zsh:
 
-`zsh < <(curl -s -S -L https://github.com/si0ls/GitProfileManager/raw/master/installer)`
+```Bash
+zsh < <(curl -s -S -L https://github.com/si0ls/GitProfileManager/raw/master/installer)
+```
 
 To uninstall:
 
-`sh ~/.gitpm/installer uninstall`
+```Bash
+sh ~/.gitpm/installer uninstall
+```
 
 ## How does GitPM works
 
@@ -26,31 +32,43 @@ To uninstall:
 
 #### Get usage:
 
-`git pm -h`
+```Bash
+git pm -h
+```
 
 #### Add a profile:
 
-`git pm add [-p profile_name -n name -m mail]`
+```Bash
+git pm add [-p profile_name -n name -m mail]
+```
 
 *If parameters are missing, will be interactive in V2.0*
 
 #### Remove a profile
 
-`git pm rm [profile_name]`
+```Bash
+git pm rm [profile_name]
+```
 
 *If parameters are missing, will be interactive in V2.0*
 
 #### List existing profiles
 
-`git pm list`
+```Bash
+git pm list
+```
 
 #### Select current git repository profile
 
-`git pm select [profile_name]`
+```Bash
+git pm select [profile_name]
+```
 
 #### Comming Soon V2.0 : Commit with a specific profile (one time)
 
-`git pm commit [--profile profile] [git options]`
+```Bash
+git pm commit [--profile profile] [git options]
+```
 
 *If parameters are missing, will be interactive in V2.0*
 
