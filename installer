@@ -1,38 +1,48 @@
 #!/usr/bin/env bash
-
 GITPM_PATH="$HOME/.gitpm"
-REPO_URL="https://github.com/si0ls/GitProfileManager"
+GITPM_REPO="https://github.com/si0ls/GitProfileManager"
+
+print_help() {
+    echo -e "Usage: $0 <command>\n"
+    echo -e "Default: install\n"
+    echo -e "Commands:\n"
+    echo -e "\tinstall\t\tInstall GitPM"
+    echo -e "\thelp\t\tDisplay this help page"
+    echo -e "\tuninstall\tUninstall GitPM\n"
+}
+
+uninstall() {
+    rm -rf $GITPM_PATH
+    sudo rm /usr/bin/git-pm
+    echo -e "\nGitPM uninstalled\n"
+}
+
+install() {
+    uninstall
+    git clone $GITPM_REPO $GITPM_PATH
+    sudo cp $GITPM_PATH/bin/git-pm /usr/bin
+    sudo chmod 777 /usr/bin/git-pm
+    chmod 777 $GITPM_PATH/hooks/pre-commit
+    git config --global init.templatedir $GITPM_PATH
+    echo -e "\nPlease use 'git init' in existing repositories to use GitPM"
+    echo -e "Use 'git pm --help' to get GitPM command list\n"
+}
 
 case "$1" in
-
-    uninstall)
-        rm -r $GITPM_PATH
+    help)
+        print_help
         ;;
 
     install)
-        git clone $REPO_URL $GITPM_PATH
-        chmod 777 "$GITPM_PATH/bin/gitpm"
-
-        case "$(basename $SHELL)" in
-            zsh)
-                echo "alias git=\"~/.gitpm/bin/gitpm\"" >> .zshrc
-                ;;
-
-            bash)
-                echo "alias git=\"~/.gitpm/bin/gitpm\"" >> .bashrc
-                ;;
-
-            *)
-                echo "Unknown shell, please add 'alias git=\"~/.gitpm/bin/gitpm\"' in your shell config file"
-                ;;
-
-        esac
-
-        echo "Please use 'git init' in existing repositories to use GitPM"
+        install
         ;;
 
-        *)
-            echo "Usage: $0 <install|uninstall>"
-            ;;
+    uninstall)
+        uninstall
+        ;;
+
+    *)
+        install
+        ;;
 
 esac
