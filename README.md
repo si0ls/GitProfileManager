@@ -10,19 +10,19 @@ Thanks to [lodi-g](https://github.com/lodi-g) :heart: - Main Contributor
 
 To install:
 
-```Bash
+```
 bash < <(curl -s -S -L https://github.com/si0ls/GitProfileManager/raw/master/installer)
 ```
 
 Or if you are using zsh:
 
-```Bash
+```
 zsh < <(curl -s -S -L https://github.com/si0ls/GitProfileManager/raw/master/installer)
 ```
 
 To uninstall:
 
-```Bash
+```
 sh ~/.gitpm/installer uninstall
 ```
 
@@ -32,13 +32,13 @@ sh ~/.gitpm/installer uninstall
 
 #### Get usage:
 
-```Bash
+```
 git pm -h
 ```
 
 #### Add a profile:
 
-```Bash
+```
 git pm add [-p profile_name -n name -m mail]
 ```
 
@@ -46,7 +46,7 @@ git pm add [-p profile_name -n name -m mail]
 
 #### Remove a profile
 
-```Bash
+```
 git pm rm [profile_name]
 ```
 
@@ -54,19 +54,19 @@ git pm rm [profile_name]
 
 #### List existing profiles
 
-```Bash
+```
 git pm list
 ```
 
 #### Select current git repository profile
 
-```Bash
+```
 git pm select [profile_name]
 ```
 
 #### Comming Soon V2.0 : Commit with a specific profile (one time)
 
-```Bash
+```
 git pm commit [--profile profile] [git options]
 ```
 
