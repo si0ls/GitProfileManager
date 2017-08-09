@@ -1,0 +1,144 @@
+#!/usr/bin/env python3
+
+import sys
+import json
+import argparse
+import subprocess
+from os import path
+from pathlib import Path
+
+class GitPM:
+    config = path.join(Path.home(), '.gitpm', 'profiles.json')
+    
+    def __init__(self):
+        raise TypeError('GitPM may not be instantiated')
+
+    @staticmethod
+    def load_conf():
+        with open(GitPM.config) as conf:
+            return json.load(conf)
+
+    @staticmethod
+    def write_conf(d):
+        with open(GitPM.config, 'w') as conf:
+            json.dump(d, conf, indent=4, sort_keys=True)
+
+    @staticmethod
+    def add(args):
+        d = GitPM.load_conf()
+
+        if args.profile in d:
+            return print('Profile \'%s\' already exists (%s <%s>)' 
+                    % (args.profile, args.name, args.mail), 
+                    file=sys.stderr)
+
+        d[args.profile] = {
+            'name': args.name,
+            'mail': args.mail
+        }
+
+        GitPM.write_conf(d)
+        print('Added profile \'%s\' (%s <%s>)' % (args.profile, args.name, args.mail))
+
+    @staticmethod
+    def remove(args):
+        d = GitPM.load_conf()
+
+        if not args.profile in d:
+            return print('Profile \'%s\' does not exist' % (args.profile),
+                    file=sys.stderr)
+
+        del d[args.profile]
+
+        GitPM.write_conf(d)
+        print('Removed profile \'%s\'' % (args.profile))
+
+    @staticmethod
+    def select(args, verbose=True):
+        d = GitPM.load_conf()
+        
+        if not args.profile in d:
+            return print('Profile \'%s\' does not exist' % (args.profile),
+                file=sys.stderr)
+
+        p = d[args.profile]
+        sn = 'git config --local --replace-all user.name'.split()
+        sn.append(p['name'])
+        sm = 'git config --local --replace-all user.mail'.split()
+        sm.append(p['mail'])
+
+        subprocess.call(sn)
+        subprocess.call(sm)
+        if verbose:
+            print('Selected \'%s\' (%s <%s>)' % (args.profile, p['name'], p['mail']))
+
+    @staticmethod
+    def commit(args):
+        s = 'git config --local --get user.{}'
+        save = {
+            'name': subprocess.check_output(s.format('name').split())[:-1],
+            'mail': subprocess.check_output(s.format('mail').split())[:-1]
+        }
+        GitPM.select(args, verbose=False)
+
+        s = 'git commit'.split()
+        s += args.commit_args[1:]
+        subprocess.call(s)
+
+        sn = 'git config --local --replace-all user.name'.split()
+        sn.append(save['name'])
+        sm = 'git config --local --replace-all user.mail'.split()
+        sm.append(save['mail'])
+        subprocess.call(sn)
+        subprocess.call(sm)
+
+    @staticmethod
+    def list(args):
+        d = GitPM.load_conf()
+        for n in d:
+            print('{0:20}{1} <{2}>'.format(n, d[n]['name'], d[n]['mail']))
+
+
+if __name__ == '__main__':
+    # top level parser
+    parser = argparse.ArgumentParser(description='Git Profile Manager')
+    parser.add_argument('-v', '--version', action='version', version='%(prog)s 1.0')
+
+    # subparsers
+    subparsers = parser.add_subparsers(help='Action')
+
+    # add subparser
+    ga = subparsers.add_parser('add', help='Add a profile to GitPM')
+    ga.set_defaults(func=GitPM.add)
+    ga.add_argument('-p', '--profile', help='Profile\'s name', required=True)
+    ga.add_argument('-n', '--name', help='User\'s name', required=True)
+    ga.add_argument('-m', '--mail', help='User\'s mail', required=True)
+
+    # rm subparser
+    gr = subparsers.add_parser('rm', help='Remove a profile from GitPM')
+    gr.set_defaults(func=GitPM.remove)
+    gr.add_argument('-p', '--profile', help='Profile\'s name', required=True)
+
+    # select subparser
+    gs = subparsers.add_parser('select', help='Select a profile for this repository')
+    gs.set_defaults(func=GitPM.select)
+    gs.add_argument('-p', '--profile', help='Profile\'s name', required=True)
+
+    # commit subparser
+    gc = subparsers.add_parser('commit', help='Commit with a specific profile',
+        usage='git-pm commit [-h] -p PROFILE ...\nexample: git-pm commit -p github -- -am "My commit"')
+    gc.set_defaults(func=GitPM.commit)
+    gc.add_argument('-p', '--profile', help='Profile\'s name', required=True)
+    gc.add_argument('commit_args', nargs=argparse.REMAINDER, help='Commit arguments')
+
+    # list subparser
+    gl = subparsers.add_parser('list', help='List all profiles')
+    gl.set_defaults(func=GitPM.list)
+
+    args = parser.parse_args()
+    if not 'func' in args:
+        parser.print_help()
+        parser.exit()
+
+    args.func(args)
+
