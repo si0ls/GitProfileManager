@@ -2,17 +2,22 @@
 
 import imp
 import sys
+import os
 import argparse
 gitpm = imp.load_source('git-pm', '/usr/bin/git-pm')
-
-sys.system('exec < /dev/tty')
 
 local = gitpm.GitPM.get_local_profile()
 
 if local == {}:
     print('[git-pm] No local configuration was found')
-    profile = input('[git-pm] Choose profile: ')
+    print('[git-pm] Choose profile: ')
+    with open('/dev/tty') as tty:
+        profile = tty.readline()[:-1]
     args = argparse.Namespace()
     args.profile = profile
-    gitpm.GitPM.select(args)
+    bs = gitpm.GitPM.select(args)
+    
+    if not bs:
+        print('Aborting commit...')
+        sys.exit(1)
     

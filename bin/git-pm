@@ -40,9 +40,9 @@ class GitPM:
         d = GitPM.load_conf()
 
         if args.profile in d:
-            return print('Profile \'%s\' already exists (%s <%s>)' 
-                    % (args.profile, args.name, args.mail), 
+            print('Profile \'%s\' already exists (%s <%s>)' % (args.profile, args.name, args.mail), 
                     file=sys.stderr)
+            return False
 
         d[args.profile] = {
             'name': args.name,
@@ -51,27 +51,29 @@ class GitPM:
 
         GitPM.write_conf(d)
         print('Added profile \'%s\' (%s <%s>)' % (args.profile, args.name, args.mail))
+        return True
 
     @staticmethod
     def remove(args):
         d = GitPM.load_conf()
 
         if not args.profile in d:
-            return print('Profile \'%s\' does not exist' % (args.profile),
-                    file=sys.stderr)
+            print('Profile \'%s\' does not exist' % (args.profile), file=sys.stderr)
+            return False
 
         del d[args.profile]
 
         GitPM.write_conf(d)
         print('Removed profile \'%s\'' % (args.profile))
+        return True
 
     @staticmethod
     def select(args):
         d = GitPM.load_conf()
         
         if not args.profile in d:
-            return print('Profile \'%s\' does not exist' % (args.profile),
-                file=sys.stderr)
+            print('Profile \'%s\' does not exist' % (args.profile), file=sys.stderr)
+            return False
 
         p = d[args.profile]
         sn = 'git config --local --replace-all user.name'.split()
@@ -82,6 +84,7 @@ class GitPM:
         subprocess.call(sn)
         subprocess.call(sm)
         print('Selected \'%s\' (%s <%s>)' % (args.profile, p['name'], p['mail']))
+        return True
 
     @staticmethod
     def commit(args):
