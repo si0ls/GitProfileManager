@@ -1,0 +1,38 @@
+#!/usr/bin/env sh
+
+GITPM_PATH="$HOME/.gitpm"
+REPO_URL="https://github.com/si0ls/GitProfileManager"
+
+case "$1" in
+
+    uninstall)
+        rm -r $GITPM_PATH
+        ;;
+
+    install)
+        git clone $REPO_URL $GITPM_PATH
+        chmod 777 "$GITPM_PATH/bin/gitpm"
+
+        case "$(basename $SHELL)" in
+            zsh)
+                echo "alias git=\"~/.gitpm/bin/gitpm\"" >> .zshrc
+                ;;
+
+            bash)
+                echo "alias git=\"~/.gitpm/bin/gitpm\"" >> .bashrc
+                ;;
+
+            *)
+                echo "Unknown shell, please add 'alias git=\"~/.gitpm/bin/gitpm\"' in your shell config file"
+                ;;
+
+        esac
+
+        echo "Please use 'git init' in existing repositories to use GitPM"
+        ;;
+
+        *)
+            echo "Usage: $0 <install|uninstall>"
+            ;;
+
+esac
