@@ -2,35 +2,80 @@
 GITPM_PATH="$HOME/.gitpm"
 GITPM_REPO="https://github.com/si0ls/GitProfileManager"
 
-print_help() {
+usage() {
     echo -e "Usage: $0 <command>\n"
     echo -e "Default: install\n"
     echo -e "Commands:\n"
     echo -e "\tinstall\t\tInstall GitPM"
     echo -e "\thelp\t\tDisplay this help page"
-    echo -e "\tuninstall\tUninstall GitPM\n"
+    echo -e "\tuninstall\tUninstall GitPM"
+    exit 0
 }
 
 uninstall() {
-    rm -rf $GITPM_PATH
-    sudo rm /usr/bin/git-pm
-    echo -e "\nGitPM uninstalled\n"
+    echo "Uninstalling GitPM..."
+    if [ -d $GITPM_PATH ]; then
+        eval "rm $GITPM_PATH" &> /dev/null
+    fi
+    if [ -f /usr/bin/git-pm ]; then
+        eval "sudo rm /usr/bin/git-pm" &> /dev/null
+    fi
+    echo -e "\e[32mGitPM uninstalled successfully"
+    exit 0
 }
 
 install() {
-    uninstall
+    echo "Deleting old install if exists..."
+    if [ -d $GITPM_PATH ]; then
+        rm -rf $GITPM_PATH
+    fi
+    if [ -f /usr/bin/git-pm ]; then
+        sudo rm /usr/bin/git-pm
+    fi
+    echo "Old install deleted successfully"
+
     git clone $GITPM_REPO $GITPM_PATH
-    sudo cp $GITPM_PATH/bin/git-pm /usr/bin
-    sudo chmod 777 /usr/bin/git-pm
-    chmod 777 $GITPM_PATH/hooks/pre-commit
-    git config --global init.templatedir $GITPM_PATH
-    echo -e "\nPlease use 'git init' in existing repositories to use GitPM"
-    echo -e "Use 'git pm --help' to get GitPM command list\n"
+    if [ $? != 0 ]; then
+        echo -e "\e[31mError during repository cloning, exiting"
+        exit 1
+    fi
+    echo "Repository cloned successfully"
+
+    echo "Installing git extension"
+    eval "sudo cp $GITPM_PATH/bin/git-pm /usr/bin" &> /dev/null
+    if [ $? != 0 ]; then
+        echo -e "\e[31mCannot copy git-pm in '/usr/bin', exiting"
+        exit 1
+    fi
+    eval "sudo chmod 777 /usr/bin/git-pm" &> /dev/null
+    if [ $? != 0 ]; then
+        echo -e "\e[31mCannot chmod git-pm, exiting"
+        exit 1
+    fi
+    echo "Git extension installed successfully"
+
+    echo "Installing git commit hook"
+    eval "chmod 777 $GITPM_PATH/hooks/pre-commit" &> /dev/null
+    if [ $? -ne 0 ]; then
+        echo -e "\e[31mCannot copy git-pm commit hook in '/usr/bin', exiting"
+        exit 1
+    fi
+    eval "git config --global init.templatedir $GITPM_PATH" &> /dev/null
+    if [ $? != 0 ]; then
+        echo -e "\e[31mCannot install git commit hook, exiting"
+        exit 1
+    fi
+    echo "Git commit hook installed successfully"
+
+    echo -e "\e[32mGitPM installed successfully\n"
+    echo -e "\e[39mPlease use 'git init' in existing repositories to use GitPM"
+    echo -e "Use 'git pm --help' to get GitPM command list"
+    exit 0
 }
 
 case "$1" in
     help)
-        print_help
+        usage
         ;;
 
     install)
