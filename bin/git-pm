@@ -81,8 +81,7 @@ class GitPM:
 
         subprocess.call(sn)
         subprocess.call(sm)
-        if verbose:
-            print('Selected \'%s\' (%s <%s>)' % (args.profile, p['name'], p['mail']))
+        print('Selected \'%s\' (%s <%s>)' % (args.profile, p['name'], p['mail']))
 
     @staticmethod
     def commit(args):

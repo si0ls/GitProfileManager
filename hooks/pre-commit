@@ -1,0 +1,18 @@
+#!/usr/bin/env python3
+
+import imp
+import sys
+import argparse
+gitpm = imp.load_source('git-pm', '/usr/bin/git-pm')
+
+sys.system('exec < /dev/tty')
+
+local = gitpm.GitPM.get_local_profile()
+
+if local == {}:
+    print('[git-pm] No local configuration was found')
+    profile = input('[git-pm] Choose profile: ')
+    args = argparse.Namespace()
+    args.profile = profile
+    gitpm.GitPM.select(args)
+    
