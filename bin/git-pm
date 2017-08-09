@@ -24,6 +24,18 @@ class GitPM:
             json.dump(d, conf, indent=4, sort_keys=True)
 
     @staticmethod
+    def get_local_profile():
+        s = 'git config --local --get user.{}'
+
+        try:
+            return {
+                'name': subprocess.check_output(s.format('name').split())[:-1],
+                'mail': subprocess.check_output(s.format('mail').split())[:-1]
+            }
+        except:
+            return {}
+
+    @staticmethod
     def add(args):
         d = GitPM.load_conf()
 
@@ -54,7 +66,7 @@ class GitPM:
         print('Removed profile \'%s\'' % (args.profile))
 
     @staticmethod
-    def select(args, verbose=True):
+    def select(args):
         d = GitPM.load_conf()
         
         if not args.profile in d:
@@ -74,23 +86,21 @@ class GitPM:
 
     @staticmethod
     def commit(args):
-        s = 'git config --local --get user.{}'
-        save = {
-            'name': subprocess.check_output(s.format('name').split())[:-1],
-            'mail': subprocess.check_output(s.format('mail').split())[:-1]
-        }
-        GitPM.select(args, verbose=False)
+        local = GitPM.get_local_profile()
+
+        GitPM.select(args)
 
         s = 'git commit'.split()
         s += args.commit_args[1:]
         subprocess.call(s)
 
-        sn = 'git config --local --replace-all user.name'.split()
-        sn.append(save['name'])
-        sm = 'git config --local --replace-all user.mail'.split()
-        sm.append(save['mail'])
-        subprocess.call(sn)
-        subprocess.call(sm)
+        if local != {}:
+            sn = 'git config --local --replace-all user.name'.split()
+            sn.append(local['name'])
+            sm = 'git config --local --replace-all user.mail'.split()
+            sm.append(local['mail'])
+            subprocess.call(sn)
+            subprocess.call(sm)
 
     @staticmethod
     def list(args):
