@@ -14,12 +14,6 @@ To install:
 bash < <(curl -s -S -L https://github.com/si0ls/GitProfileManager/raw/master/installer)
 ```
 
-Or if you are using zsh:
-
-```
-zsh < <(curl -s -S -L https://github.com/si0ls/GitProfileManager/raw/master/installer)
-```
-
 To uninstall:
 
 ```
@@ -39,39 +33,33 @@ git pm -h
 #### Add a profile:
 
 ```
-git pm add [-p profile_name -n name -m mail]
+git pm add [-h] -p PROFILE -n NAME -m MAIL
 ```
-
-*If parameters are missing, will be interactive in V2.0*
 
 #### Remove a profile
 
 ```
-git pm rm [profile_name]
+git pm rm [-h] -p PROFILE
 ```
-
-*If parameters are missing, will be interactive in V2.0*
 
 #### List existing profiles
 
 ```
-git pm list
+git pm list [-h]
 ```
 
 #### Select current git repository profile
 
 ```
-git pm select [profile_name]
+git pm select [-h] -p PROFILE
 ```
 
-#### Comming Soon V2.0 : Commit with a specific profile (one time)
+#### Commit with a profile (restore the old profile after comitting)
 
 ```
-git pm commit [--profile profile] [git options]
+git pm commit [-h] -p PROFILE ...
 ```
-
-*If parameters are missing, will be interactive in V2.0*
 
 ### Git Hook
 
-GitPM commes with a git hook on commit, asking wich profile to use for the current git repository if not defined.
+GitPM comes with a git hook on commit, asking wich profile to use for the current git repository if not defined.
