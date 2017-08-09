@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 GITPM_PATH="$HOME/.gitpm"
 REPO_URL="https://github.com/si0ls/GitProfileManager"
